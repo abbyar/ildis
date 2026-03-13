@@ -1,0 +1,33 @@
+version: '3.8'
+
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "8080:80"
+    volumes:
+      - ./common/config/params-local.php:/var/www/common/config/params-local.php:ro
+      - ./common/config/main-local.php:/var/www/common/config/main-local.php:ro
+      - runtime:/var/www/runtime
+      - backend-assets:/var/www/backend/web/assets
+      - frontend-assets:/var/www/frontend/web/assets
+      - backend-uploads:/var/www/backend/web/uploads
+      - frontend-uploads:/var/www/frontend/web/uploads
+    environment:
+      - PHP_DISPLAY_ERRORS=Off
+      - PHP_ERROR_REPORTING=E_ALL & ~E_DEPRECATED
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost/"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+volumes:
+  runtime:
+  backend-assets:
+  frontend-assets:
+  backend-uploads:
+  frontend-uploads:
