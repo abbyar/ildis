@@ -18,10 +18,9 @@ FROM php:8.2-fpm-alpine AS production
 
 WORKDIR /var/www
 
-# Install system dependencies and build tools
+# Install system dependencies, build tools, and s6-overlay
 RUN apk add --no-cache \
     nginx \
-    supervisor \
     curl \
     unzip \
     libzip-dev \
@@ -33,7 +32,8 @@ RUN apk add --no-cache \
     icu-libs \
     gcc \
     make \
-    musl-dev
+    musl-dev \
+    s6
 
 # Install PHP extensions
 RUN docker-php-ext-install -j$(nproc) \
@@ -100,25 +100,20 @@ RUN echo 'server {' > /etc/nginx/http.d/default.conf \
     && echo '        deny all;' >> /etc/nginx/http.d/default.conf \
     && echo '    }' >> /etc/nginx/http.d/default.conf
 
-# Configure Supervisor
-RUN mkdir -p /etc/supervisor/conf.d \
-    && echo '[supervisord]' > /etc/supervisor/conf.d/supervisord.conf \
-    && echo 'nodaemon=true' >> /etc/supervisor/conf.d/supervisord.conf \
-    && echo '' >> /etc/supervisor/conf.d/supervisord.conf \
-    && echo '[program:php-fpm]' >> /etc/supervisor/conf.d/supervisord.conf \
-    && echo 'command=/usr/local/sbin/php-fpm' >> /etc/supervisor/conf.d/supervisord.conf \
-    && echo 'stdout_logfile=/dev/stdout' >> /etc/supervisor/conf.d/supervisord.conf \
-    && echo 'stdout_logfile_maxbytes=0' >> /etc/supervisor/conf.d/supervisord.conf \
-    && echo 'stderr_logfile=/dev/stderr' >> /etc/supervisor/conf.d/supervisord.conf \
-    && echo 'stderr_logfile_maxbytes=0' >> /etc/supervisor/conf.d/supervisord.conf \
-    && echo '' >> /etc/supervisor/conf.d/supervisord.conf \
-    && echo '[program:nginx]' >> /etc/supervisor/conf.d/supervisord.conf \
-    && echo 'command=/usr/sbin/nginx -g "daemon off;"' >> /etc/supervisor/conf.d/supervisord.conf \
-    && echo 'stdout_logfile=/dev/stdout' >> /etc/supervisor/conf.d/supervisord.conf \
-    && echo 'stdout_logfile_maxbytes=0' >> /etc/supervisor/conf.d/supervisord.conf \
-    && echo 'stderr_logfile=/dev/stderr' >> /etc/supervisor/conf.d/supervisord.conf \
-    && echo 'stderr_logfile_maxbytes=0' >> /etc/supervisor/conf.d/supervisord.conf
+# Create s6 service directories
+RUN mkdir -p /etc/s6/services/php-fpm /etc/s6/services/nginx
+
+# Create php-fpm service
+RUN echo '#!/command/execlineb -P' > /etc/s6/services/php-fpm/run \
+    && echo 'php-fpm' >> /etc/s6/services/php-fpm/run
+
+# Create nginx service
+RUN echo '#!/command/execlineb -P' > /etc/s6/services/nginx/run \
+    && echo 'nginx' >> /etc/s6/services/nginx/run
+
+# Make scripts executable
+RUN chmod +x /etc/s6/services/php-fpm/run /etc/s6/services/nginx/run
 
 EXPOSE 80
 
-CMD ["/usr/bin/supervisord", "-c", "/etc/supervisor/conf.d/supervisord.conf"]
+CMD ["/init"]
