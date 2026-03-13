@@ -50,6 +50,14 @@ RUN docker-php-ext-install -j$(nproc) \
     intl \
     calendar
 
+# Use PHP production ini — disables display_errors so warnings go to log, not HTTP output
+RUN cp /usr/local/etc/php/php.ini-production /usr/local/etc/php/php.ini
+
+# PHP-FPM clears env vars by default (clear_env=yes), which breaks getenv() for
+# Docker-injected environment variables. Disable it so runtime env vars work without .env.
+RUN echo '[www]' > /usr/local/etc/php-fpm.d/zz-docker-env.conf \
+    && echo 'clear_env = no' >> /usr/local/etc/php-fpm.d/zz-docker-env.conf
+
 # Copy application files
 COPY --from=builder /app /var/www
 

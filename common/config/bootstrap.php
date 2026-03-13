@@ -1,4 +1,6 @@
 <?php
+require __DIR__ . '/env.php';
+
 Yii::setAlias('@feed', dirname(dirname(__DIR__)) . '/feed/');
 Yii::setAlias('@common', dirname(__DIR__));
 Yii::setAlias('@frontend', dirname(dirname(__DIR__)) . '/frontend');
