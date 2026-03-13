@@ -23,6 +23,7 @@ RUN apk add --no-cache \
     nginx \
     curl \
     unzip \
+    bash \
     libzip-dev \
     libpng-dev \
     libjpeg-turbo-dev \
@@ -33,13 +34,6 @@ RUN apk add --no-cache \
     gcc \
     make \
     musl-dev
-
-# Download and install s6-overlay v3.2.2.0
-RUN curl -L -o /tmp/s6-overlay-noarch.tar.xz https://github.com/just-containers/s6-overlay/releases/download/v3.2.2.0/s6-overlay-noarch.tar.xz \
-    && curl -L -o /tmp/s6-overlay-x86_64.tar.xz https://github.com/just-containers/s6-overlay/releases/download/v3.2.2.0/s6-overlay-x86_64.tar.xz \
-    && tar -C / -Jxf /tmp/s6-overlay-noarch.tar.xz \
-    && tar -C / -Jxf /tmp/s6-overlay-x86_64.tar.xz \
-    && rm /tmp/s6-overlay-*.tar.xz
 
 # Install PHP extensions
 RUN docker-php-ext-install -j$(nproc) \
@@ -103,17 +97,12 @@ RUN echo 'server {' > /etc/nginx/http.d/default.conf \
     && echo '        deny all;' >> /etc/nginx/http.d/default.conf \
     && echo '    }' >> /etc/nginx/http.d/default.conf
 
-# Create s6 service directories
-RUN mkdir -p /etc/s6/services/php-fpm /etc/s6/services/nginx
-
-# Create php-fpm service with foreground mode
-RUN printf '#!/command/execlineb -P\nphp-fpm\n' > /etc/s6/services/php-fpm/run \
-    && chmod +x /etc/s6/services/php-fpm/run
-
-# Create nginx service with foreground mode
-RUN printf '#!/command/execlineb -P\nnginx -g "daemon off;"\n' > /etc/s6/services/nginx/run \
-    && chmod +x /etc/s6/services/nginx/run
+# Create startup script
+RUN echo '#!/bin/bash' > /start.sh \
+    && echo 'nginx -g "daemon off;" &' >> /start.sh \
+    && echo 'php-fpm' >> /start.sh \
+    && chmod +x /start.sh
 
 EXPOSE 80
 
-ENTRYPOINT ["/init"]
+CMD ["/start.sh"]
