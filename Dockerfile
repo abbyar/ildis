@@ -18,7 +18,7 @@ FROM php:8.2-fpm-alpine AS production
 
 WORKDIR /var/www
 
-# Install system dependencies, build tools, and s6-overlay
+# Install system dependencies and build tools
 RUN apk add --no-cache \
     nginx \
     curl \
@@ -32,8 +32,7 @@ RUN apk add --no-cache \
     icu-libs \
     gcc \
     make \
-    musl-dev \
-    s6
+    musl-dev
 
 # Install PHP extensions
 RUN docker-php-ext-install -j$(nproc) \
@@ -100,20 +99,13 @@ RUN echo 'server {' > /etc/nginx/http.d/default.conf \
     && echo '        deny all;' >> /etc/nginx/http.d/default.conf \
     && echo '    }' >> /etc/nginx/http.d/default.conf
 
-# Create s6 service directories
-RUN mkdir -p /etc/s6/services/php-fpm /etc/s6/services/nginx
-
-# Create php-fpm service
-RUN echo '#!/command/execlineb -P' > /etc/s6/services/php-fpm/run \
-    && echo 'php-fpm' >> /etc/s6/services/php-fpm/run
-
-# Create nginx service
-RUN echo '#!/command/execlineb -P' > /etc/s6/services/nginx/run \
-    && echo 'nginx' >> /etc/s6/services/nginx/run
-
-# Make scripts executable
-RUN chmod +x /etc/s6/services/php-fpm/run /etc/s6/services/nginx/run
+# Create startup script
+RUN echo '#!/bin/sh' > /start.sh \
+    && echo 'nginx' >> /start.sh \
+    && echo 'php-fpm' >> /start.sh \
+    && echo 'sleep infinity' >> /start.sh \
+    && chmod +x /start.sh
 
 EXPOSE 80
 
-CMD ["/init"]
+CMD ["/start.sh"]
