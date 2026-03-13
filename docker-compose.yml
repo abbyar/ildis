@@ -1,10 +1,33 @@
 version: '3.8'
 
 services:
+  mysql:
+    image: mysql:8.0
+    container_name: ildis_mysql
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: ${DB_PASSWORD:-}
+      MYSQL_DATABASE: ${DB_DATABASE:-ildis_v4}
+      MYSQL_USER: ${DB_USER:-root}
+      MYSQL_PASSWORD: ${DB_PASSWORD:-}
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+      - ./DATABASE:/docker-entrypoint-initdb.d:ro
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
   app:
     build:
       context: .
       dockerfile: Dockerfile
+    depends_on:
+      mysql:
+        condition: service_healthy
     ports:
       - "8080:80"
     volumes:
@@ -16,6 +39,11 @@ services:
       - backend-uploads:/var/www/backend/web/uploads
       - frontend-uploads:/var/www/frontend/web/uploads
     environment:
+      - DB_HOST=mysql
+      - DB_USER=${DB_USER:-root}
+      - DB_PASSWORD=${DB_PASSWORD:-}
+      - DB_DATABASE=${DB_DATABASE:-ildis_v4}
+      - DB_DATABASE_PORT=${DB_DATABASE_PORT:-3306}
       - PHP_DISPLAY_ERRORS=Off
       - PHP_ERROR_REPORTING=E_ALL & ~E_DEPRECATED
     restart: unless-stopped
@@ -26,6 +54,7 @@ services:
       retries: 3
 
 volumes:
+  mysql_data:
   runtime:
   backend-assets:
   frontend-assets:
