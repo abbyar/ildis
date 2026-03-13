@@ -8,6 +8,8 @@ services:
     environment:
       MYSQL_ROOT_PASSWORD: ${DB_PASSWORD:-ildis2024}
       MYSQL_DATABASE: ${DB_DATABASE:-ildis_v4}
+      MYSQL_USER: ${DB_USER:-ildis}
+      MYSQL_PASSWORD: ${DB_PASSWORD:-ildis2024}
     ports:
       - "3306:3306"
     volumes:
