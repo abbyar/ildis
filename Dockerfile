@@ -111,9 +111,9 @@ RUN echo '#!/bin/execlineb -P' > /etc/s6/services/php-fpm/run && \
     echo 'php-fpm' >> /etc/s6/services/php-fpm/run && \
     chmod 755 /etc/s6/services/php-fpm/run
 
-# Create nginx run script  
+# Create nginx run script - must run in foreground
 RUN echo '#!/bin/execlineb -P' > /etc/s6/services/nginx/run && \
-    echo 'nginx' >> /etc/s6/services/nginx/run && \
+    echo 'nginx -g daemon off;' >> /etc/s6/services/nginx/run && \
     chmod 755 /etc/s6/services/nginx/run
 
 EXPOSE 80
