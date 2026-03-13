@@ -101,7 +101,8 @@ RUN echo 'server {' > /etc/nginx/http.d/default.conf \
     && echo '    }' >> /etc/nginx/http.d/default.conf
 
 # Configure Supervisor
-RUN echo '[supervisord]' > /etc/supervisor/conf.d/supervisord.conf \
+RUN mkdir -p /etc/supervisor/conf.d \
+    && echo '[supervisord]' > /etc/supervisor/conf.d/supervisord.conf \
     && echo 'nodaemon=true' >> /etc/supervisor/conf.d/supervisord.conf \
     && echo '' >> /etc/supervisor/conf.d/supervisord.conf \
     && echo '[program:php-fpm]' >> /etc/supervisor/conf.d/supervisord.conf \
