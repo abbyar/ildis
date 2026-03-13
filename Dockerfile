@@ -18,7 +18,7 @@ FROM php:8.2-fpm-alpine AS production
 
 WORKDIR /var/www
 
-# Install system dependencies, build tools, and s6-overlay
+# Install system dependencies and build tools
 RUN apk add --no-cache \
     nginx \
     curl \
@@ -34,12 +34,12 @@ RUN apk add --no-cache \
     make \
     musl-dev
 
-# Download and install s6-overlay
-ADD https://github.com/just-containers/s6-overlay/releases/download/v3.1.6.2/s6-overlay-noarch.tar.gz /tmp/
-ADD https://github.com/just-containers/s6-overlay/releases/download/v3.1.6.2/s6-overlay-x86_64.tar.gz /tmp/
-RUN tar -C / -Jxpf /tmp/s6-overlay-noarch.tar.gz \
-    && tar -C / -Jxpf /tmp/s6-overlay-x86_64.tar.gz \
-    && rm /tmp/s6-overlay-*.tar.gz
+# Download and install s6-overlay v3.2.2.0
+RUN curl -L -o /tmp/s6-overlay-noarch.tar.xz https://github.com/just-containers/s6-overlay/releases/download/v3.2.2.0/s6-overlay-noarch.tar.xz \
+    && curl -L -o /tmp/s6-overlay-x86_64.tar.xz https://github.com/just-containers/s6-overlay/releases/download/v3.2.2.0/s6-overlay-x86_64.tar.xz \
+    && tar -C / -Jxf /tmp/s6-overlay-noarch.tar.xz \
+    && tar -C / -Jxf /tmp/s6-overlay-x86_64.tar.xz \
+    && rm /tmp/s6-overlay-*.tar.xz
 
 # Install PHP extensions
 RUN docker-php-ext-install -j$(nproc) \
@@ -107,16 +107,15 @@ RUN echo 'server {' > /etc/nginx/http.d/default.conf \
     && echo '    }' >> /etc/nginx/http.d/default.conf
 
 # Create s6 service directories
-RUN mkdir -p /etc/s6/services/php-fpm /etc/s6/services/nginx /etc/s6/services/nginxfinish
+RUN mkdir -p /etc/s6/services/php-fpm /etc/s6/services/nginx
 
 # Create php-fpm service
 RUN echo '#!/command/execlineb -P' > /etc/s6/services/php-fpm/run \
     && echo 'php-fpm' >> /etc/s6/services/php-fpm/run \
     && chmod +x /etc/s6/services/php-fpm/run
 
-# Create nginx service with dependency on php-fpm
+# Create nginx service
 RUN echo '#!/command/execlineb -P' > /etc/s6/services/nginx/run \
-    && echo 's6-svc -t /var/run/s6/services/php-fpm' >> /etc/s6/services/nginx/run \
     && echo 'nginx' >> /etc/s6/services/nginx/run \
     && chmod +x /etc/s6/services/nginx/run
 
