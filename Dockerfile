@@ -52,16 +52,17 @@ RUN php init --env=Production --overwrite=n
 # Copy .env.example to .env if not exists
 RUN test -f /var/www/.env || cp /var/www/.env.example /var/www/.env
 
-# Setup permissions
-RUN chown -R www-data:www-data /var/www \
+# Setup permissions - create directories first
+RUN mkdir -p /var/www/runtime \
+    && mkdir -p /var/www/backend/web/assets \
+    && mkdir -p /var/www/backend/web/uploads \
+    && mkdir -p /var/www/frontend/web/assets \
+    && mkdir -p /var/www/frontend/web/uploads \
+    && chown -R www-data:www-data /var/www \
     && chmod -R 755 /var/www \
     && chmod -R 775 /var/www/runtime \
     && chmod -R 775 /var/www/backend/web/assets \
-    && chmod -R 775 /var/www/frontend/web/assets \
-    && mkdir -p /var/www/backend/web/uploads \
-    && mkdir -p /var/www/frontend/web/uploads \
-    && chown -R www-data:www-data /var/www/backend/web/uploads \
-    && chown -R www-data:www-data /var/www/frontend/web/uploads
+    && chmod -R 775 /var/www/frontend/web/assets
 
 # Configure Nginx
 RUN echo 'server {' > /etc/nginx/http.d/default.conf \
