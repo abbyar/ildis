@@ -104,7 +104,7 @@ RUN echo 'server {' > /etc/nginx/http.d/default.conf \
     && echo '    }' >> /etc/nginx/http.d/default.conf
 
 # Create s6 service directories
-RUN mkdir -p /etc/s6/services/php-fpm /etc/s6/services/nginx /etc/s6/services/nginx/finish
+RUN mkdir -p /etc/s6/services/php-fpm /etc/s6/services/nginx
 
 # Create php-fpm service with foreground mode
 RUN printf '#!/command/execlineb -P\nphp-fpm\n' > /etc/s6/services/php-fpm/run \
@@ -113,9 +113,6 @@ RUN printf '#!/command/execlineb -P\nphp-fpm\n' > /etc/s6/services/php-fpm/run \
 # Create nginx service with foreground mode
 RUN printf '#!/command/execlineb -P\nnginx -g "daemon off;"\n' > /etc/s6/services/nginx/run \
     && chmod +x /etc/s6/services/nginx/run
-
-# Ensure s6 runs services in correct order - nginx depends on php-fpm
-RUN printf '#!/command/execlineb -P\ns6-svc -w /var/run/s6/services/php-fpm\n' > /etc/s6/services/nginx/finish
 
 EXPOSE 80
 
