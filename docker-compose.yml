@@ -6,10 +6,10 @@ services:
     container_name: ildis_mysql
     restart: unless-stopped
     environment:
-      MYSQL_ROOT_PASSWORD: ${DB_PASSWORD:-}
+      MYSQL_ROOT_PASSWORD: ${DB_PASSWORD:-ildis2024}
       MYSQL_DATABASE: ${DB_DATABASE:-ildis_v4}
       MYSQL_USER: ${DB_USER:-root}
-      MYSQL_PASSWORD: ${DB_PASSWORD:-}
+      MYSQL_PASSWORD: ${DB_PASSWORD:-ildis2024}
     ports:
       - "3306:3306"
     volumes:
@@ -41,7 +41,7 @@ services:
     environment:
       - DB_HOST=mysql
       - DB_USER=${DB_USER:-root}
-      - DB_PASSWORD=${DB_PASSWORD:-}
+      - DB_PASSWORD=${DB_PASSWORD:-ildis2024}
       - DB_DATABASE=${DB_DATABASE:-ildis_v4}
       - DB_DATABASE_PORT=${DB_DATABASE_PORT:-3306}
       - PHP_DISPLAY_ERRORS=Off
