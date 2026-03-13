@@ -42,6 +42,12 @@ RUN docker-php-ext-install -j$(nproc) \
 # Copy application files
 COPY --from=builder /app /var/www
 
+# Initialize Yii2 configuration
+RUN php init --env=Production --overwrite=n
+
+# Copy .env.example to .env if not exists
+RUN test -f /var/www/.env || cp /var/www/.env.example /var/www/.env
+
 # Setup permissions
 RUN chown -R www-data:www-data /var/www \
     && chmod -R 755 /var/www \
