@@ -16,7 +16,7 @@ services:
       - mysql_data:/var/lib/mysql
       - ./DATABASE:/docker-entrypoint-initdb.d:ro
     healthcheck:
-      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      test: [ "CMD-SHELL", "mysqladmin ping -h localhost -u root -p$${MYSQL_ROOT_PASSWORD}" ]
       interval: 10s
       timeout: 5s
       retries: 5
@@ -37,6 +37,7 @@ services:
       - backend-uploads:/var/www/backend/web/uploads
       - frontend-uploads:/var/www/frontend/web/uploads
     environment:
+      - S6_KEEP_ENV=1
       - YII_ENV=${YII_ENV:-prod}
       - YII_DEBUG=${YII_DEBUG:-false}
       - DB_HOST=${DB_HOST:-mysql}
@@ -53,7 +54,7 @@ services:
       - PHP_ERROR_REPORTING=E_ALL & ~E_DEPRECATED
     restart: unless-stopped
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost/"]
+      test: [ "CMD", "curl", "-f", "http://localhost/" ]
       interval: 30s
       timeout: 10s
       retries: 3

@@ -47,7 +47,8 @@ RUN docker-php-ext-install -j$(nproc) \
     pdo_mysql \
     zip \
     gd \
-    intl
+    intl \
+    calendar
 
 # Copy application files
 COPY --from=builder /app /var/www
@@ -67,54 +68,30 @@ RUN mkdir -p /var/www/runtime \
     && chmod -R 775 /var/www/backend/web/assets \
     && chmod -R 775 /var/www/frontend/web/assets
 
-# Configure Nginx
-RUN echo 'server {' > /etc/nginx/http.d/default.conf \
-    && echo '    listen 80;' >> /etc/nginx/http.d/default.conf \
-    && echo '    server_name _;' >> /etc/nginx/http.d/default.conf \
-    && echo '    root /var/www/frontend/web;' >> /etc/nginx/http.d/default.conf \
-    && echo '    index index.php index.html;' >> /etc/nginx/http.d/default.conf \
-    && echo '' >> /etc/nginx/http.d/default.conf \
-    && echo '    location / {' >> /etc/nginx/http.d/default.conf \
-    && echo '        try_files $uri $uri/ /index.php?$args;' >> /etc/nginx/http.d/default.conf \
-    && echo '    }' >> /etc/nginx/http.d/default.conf \
-    && echo '' >> /etc/nginx/http.d/default.conf \
-    && echo '    location ~ \.php$' >> /etc/nginx/http.d/default.conf \
-    && echo '    {' >> /etc/nginx/http.d/default.conf \
-    && echo '        fastcgi_pass 127.0.0.1:9000;' >> /etc/nginx/http.d/default.conf \
-    && echo '        fastcgi_index index.php;' >> /etc/nginx/http.d/default.conf \
-    && echo '        fastcgi_param SCRIPT_FILENAME $document_root$fastcgi_script_name;' >> /etc/nginx/http.d/default.conf \
-    && echo '        include fastcgi_params;' >> /etc/nginx/http.d/default.conf \
-    && echo '    }' >> /etc/nginx/http.d/default.conf \
-    && echo '' >> /etc/nginx/http.d/default.conf \
-    && echo '    location /backend {' >> /etc/nginx/http.d/default.conf \
-    && echo '        alias /var/www/backend/web;' >> /etc/nginx/http.d/default.conf \
-    && echo '        try_files $uri $uri/ /backend/index.php?$args;' >> /etc/nginx/http.d/default.conf \
-    && echo '' >> /etc/nginx/http.d/default.conf \
-    && echo '        location ~ \.php$' >> /etc/nginx/http.d/default.conf \
-    && echo '        {' >> /etc/nginx/http.d/default.conf \
-    && echo '            fastcgi_pass 127.0.0.1:9000;' >> /etc/nginx/http.d/default.conf \
-    && echo '            fastcgi_index index.php;' >> /etc/nginx/http.d/default.conf \
-    && echo '            fastcgi_param SCRIPT_FILENAME $request_filename;' >> /etc/nginx/http.d/default.conf \
-    && echo '            include fastcgi_params;' >> /etc/nginx/http.d/default.conf \
-    && echo '        }' >> /etc/nginx/http.d/default.conf \
-    && echo '    }' >> /etc/nginx/http.d/default.conf \
-    && echo '' >> /etc/nginx/http.d/default.conf \
-    && echo '    location ~ /\. {' >> /etc/nginx/http.d/default.conf \
-    && echo '        deny all;' >> /etc/nginx/http.d/default.conf \
-    && echo '    }' >> /etc/nginx/http.d/default.conf
+# Configure Nginx (use a file to avoid shell-escaping issues)
+COPY docker/nginx/default.conf /etc/nginx/http.d/default.conf
 
-# Create s6 service directories with proper structure
-RUN mkdir -p /etc/s6/services/php-fpm /etc/s6/services/nginx
+# Create s6-overlay v3 service directories
+# Each service needs: a directory, a type file, and a run script
+# Then they must be listed in a bundle so s6-rc activates them on boot
 
-# Create php-fpm run script
-RUN echo '#!/bin/execlineb -P' > /etc/s6/services/php-fpm/run && \
-    echo 'php-fpm' >> /etc/s6/services/php-fpm/run && \
-    chmod 755 /etc/s6/services/php-fpm/run
+RUN mkdir -p /etc/s6-overlay/s6-rc.d/php-fpm \
+    && mkdir -p /etc/s6-overlay/s6-rc.d/nginx \
+    && mkdir -p /etc/s6-overlay/s6-rc.d/user/contents.d
 
-# Create nginx run script - must run in foreground
-RUN echo '#!/bin/execlineb -P' > /etc/s6/services/nginx/run && \
-    echo 'nginx -g daemon off;' >> /etc/s6/services/nginx/run && \
-    chmod 755 /etc/s6/services/nginx/run
+# php-fpm service
+RUN printf '#!/bin/sh\nexec php-fpm\n' > /etc/s6-overlay/s6-rc.d/php-fpm/run \
+    && chmod 755 /etc/s6-overlay/s6-rc.d/php-fpm/run \
+    && echo 'longrun' > /etc/s6-overlay/s6-rc.d/php-fpm/type
+
+# nginx service
+RUN printf '#!/bin/sh\nexec nginx -g "daemon off;"\n' > /etc/s6-overlay/s6-rc.d/nginx/run \
+    && chmod 755 /etc/s6-overlay/s6-rc.d/nginx/run \
+    && echo 'longrun' > /etc/s6-overlay/s6-rc.d/nginx/type
+
+# Register both services in the default user bundle so they start on boot
+RUN touch /etc/s6-overlay/s6-rc.d/user/contents.d/php-fpm \
+    && touch /etc/s6-overlay/s6-rc.d/user/contents.d/nginx
 
 EXPOSE 80
 
