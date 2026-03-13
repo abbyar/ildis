@@ -6,7 +6,7 @@ FROM composer:2 AS builder
 WORKDIR /app
 
 COPY composer.json composer.lock ./
-RUN composer install --no-dev --optimize-autoloader --no-interaction
+RUN composer install --no-dev --optimize-autoloader --no-interaction --ignore-platform-reqs
 
 COPY . .
 
