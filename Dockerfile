@@ -18,18 +18,22 @@ FROM php:8.2-fpm-alpine AS production
 
 WORKDIR /var/www
 
-# Install system dependencies
+# Install system dependencies and build tools
 RUN apk add --no-cache \
     nginx \
     supervisor \
     curl \
     unzip \
-    libzip \
-    libpng \
-    libjpeg-turbo \
-    freetype \
+    libzip-dev \
+    libpng-dev \
+    libjpeg-turbo-dev \
+    freetype-dev \
+    icu-dev \
     icu \
-    icu-libs
+    icu-libs \
+    gcc \
+    make \
+    musl-dev
 
 # Install PHP extensions
 RUN docker-php-ext-install -j$(nproc) \
