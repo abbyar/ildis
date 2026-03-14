@@ -8,41 +8,36 @@ use yii\widgets\ActiveForm;
 /* @var $form yii\widgets\ActiveForm */
 ?>
 
-<div class="berita-search">
-
+<div class="berita-search-widget">
     <?php $form = ActiveForm::begin([
         'action' => ['index'],
         'method' => 'get',
         'options' => [
-            'data-pjax' => 1
+            'data-pjax' => 1,
+            'class' => 'search-form'
         ],
     ]); ?>
 
-    <?= $form->field($model, 'id') ?>
+    <?= $form->field($model, 'judul', [
+        'options' => ['class' => 'form-group mb-3'],
+    ])->textInput([
+        'placeholder' => 'Cari berita...',
+        'class' => 'form-control rounded-3 py-2 px-3 border-light-gray',
+        'style' => 'background-color: #f8fafc;'
+    ])->label(false) ?>
 
-    <?= $form->field($model, 'tanggal') ?>
-
-    <?= $form->field($model, 'judul') ?>
-
-    <?= $form->field($model, 'isi') ?>
-
-    <?= $form->field($model, 'image') ?>
-
-    <?php // echo $form->field($model, 'status') ?>
-
-    <?php // echo $form->field($model, 'created_at') ?>
-
-    <?php // echo $form->field($model, 'created_by') ?>
-
-    <?php // echo $form->field($model, 'updated_at') ?>
-
-    <?php // echo $form->field($model, 'updated_by') ?>
-
-    <div class="form-group">
-        <?= Html::submitButton('Search', ['class' => 'btn btn-primary']) ?>
-        <?= Html::resetButton('Reset', ['class' => 'btn btn-default']) ?>
+    <div class="d-grid">
+        <?= Html::submitButton('<i class="ti-search mr-2"></i> Cari', ['class' => 'btn btn-primary font-weight-600 rounded-3 py-2']) ?>
     </div>
 
     <?php ActiveForm::end(); ?>
-
 </div>
+
+<style>
+.berita-search-widget .form-control:focus {
+    background-color: #fff;
+    border-color: #3b82f6;
+    box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.1);
+}
+.border-light-gray { border-color: #e2e8f0; }
+</style>

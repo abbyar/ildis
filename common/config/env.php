@@ -17,7 +17,5 @@ if (file_exists($envFile)) {
         }
     }
 } else {
-    // .env not found — fall back to runtime environment variables (e.g. Docker / OS env).
-    // Values already set via putenv/getenv from the host are still available; no action needed.
     error_log('[ILDIS] WARNING: .env file not found at ' . $envFile . '. Falling back to runtime environment variables.');
 }

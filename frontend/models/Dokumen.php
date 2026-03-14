@@ -198,10 +198,13 @@ class Dokumen extends \yii\db\ActiveRecord
 
     public function getTanggal($tanggal)  // fungsi atau method untuk mengubah hari, tanggal ke format indonesia
     {
+        if (empty($tanggal)) return '-';
         $BulanIndo = array("","Januari", "Februari", "Maret","April", "Mei", "Juni","Juli", "Agustus", "September","Oktober", "November", "Desember");
         $HariIndo= array("Minggu","Senin","Selasa","Rabu","Kamis","Jumat","Sabtu");
         $sepparator = '-';
         $parts = explode($sepparator, $tanggal);
+
+        if (count($parts) < 3) return $tanggal;
 
         //$hari = $HariIndo[date("w", mktime(0, 0, 0, $parts[1], $parts[2], $parts[0]))]; //mendapatkan hari indonesia
         $tgl   = substr($tanggal, 8, 2); // memisahkan format tanggal menggunakan substring
@@ -209,8 +212,45 @@ class Dokumen extends \yii\db\ActiveRecord
         $tahun = substr($tanggal, 0, 4); // memisahkan format tahun menggunakan substring
 
         //$result = $hari .", " .$tgl . " " . $BulanIndo[(int)$bulan] . " ". $tahun;
-        $result = $tgl . " " . $BulanIndo[(int)$bulan] . " ". $tahun;
+        $result = (int)$tgl . " " . $BulanIndo[(int)$bulan] . " ". $tahun;
         return($result);
+    }
+
+    /**
+     * Virtual attribute for Month
+     */
+    public function getBulan()
+    {
+        if (!empty($this->tanggal_penetapan)) {
+            $BulanIndo = array("","Januari", "Februari", "Maret","April", "Mei", "Juni","Juli", "Agustus", "September","Oktober", "November", "Desember");
+            $bulan = (int)date('m', strtotime($this->tanggal_penetapan));
+            return isset($BulanIndo[$bulan]) ? $BulanIndo[$bulan] : '';
+        }
+        return '';
+    }
+
+    /**
+     * Virtual attribute for Number (backward compatibility)
+     */
+    public function getNomor()
+    {
+        return $this->nomor_peraturan;
+    }
+
+    /**
+     * Virtual attribute for Volume (placeholder)
+     */
+    public function getVolume()
+    {
+        return '';
+    }
+
+    /**
+     * Virtual attribute for Pages (placeholder)
+     */
+    public function getHalaman()
+    {
+        return '';
     }
    
 }

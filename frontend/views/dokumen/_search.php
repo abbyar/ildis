@@ -3,6 +3,7 @@
 use yii\helpers\Html;
 use yii\widgets\ActiveForm;
 use yii\helpers\Url;
+
 /* @var $this yii\web\View */
 /* @var $model frontend\models\DokumenSearch */
 /* @var $form yii\widgets\ActiveForm */
@@ -14,211 +15,58 @@ use yii\helpers\Url;
         'action' => ['index'],
         'method' => 'get',
         'options' => [
-            'data-pjax' => 1
+            'data-pjax' => 1,
+            'class' => 'modern-search-form'
+        ],
+        'fieldConfig' => [
+            'template' => "{label}\n{input}\n{error}",
+            'labelOptions' => ['class' => 'form-label small fw-bold text-muted mb-1 text-uppercase', 'style' => 'letter-spacing: 0.5px;'],
+            'inputOptions' => ['class' => 'form-control border-light-subtle rounded-3 mb-3', 'style' => 'padding: 0.6rem 1rem; background-color: #f8fafc;'],
         ],
     ]); ?>
- <?= $form->field($model, 'judul') ?>
+
+    <?= $form->field($model, 'judul')->textInput(['placeholder' => 'Ketik judul...'])->label('Judul / Kata Kunci') ?>
+    
     <?= $form->field($model, 'tipe_dokumen')->dropDownList(
         \yii\helpers\ArrayHelper::map(\frontend\models\DokumenHukum::find()->where(['parent_id' => 0])->asArray()->all(), 'id', 'name'),
         [
-            'prompt' => 'Pilih Type Pengelolaan',
+            'prompt' => 'Semua Tipe',
             'onchange' => '
-                            $.get( "' . Url::toRoute('/dokumen/jenis') . '", { id: $(this).val() } )
-                                .done(function( data ) {
-                                    $( "#' . Html::getInputId($model, 'jenis_peraturan') . '" ).html( data );
-
-                                }
-                            );'
+                $.get( "' . Url::toRoute('/dokumen/jenis') . '", { id: $(this).val() } )
+                    .done(function( data ) {
+                        $( "#' . Html::getInputId($model, 'jenis_peraturan') . '" ).html( data );
+                    }
+                );'
         ]
-    )->label('Tipe Pengelolaan Dokumen');
-    ?>
+    )->label('Tipe Pengelolaan') ?>
 
     <?= $form->field($model, 'jenis_peraturan')->dropDownList(
         \yii\helpers\ArrayHelper::map(\frontend\models\DokumenHukum::find()->where(['parent_id' => $model->tipe_dokumen])->asArray()->all(), 'name', 'name'),
         [
-            'prompt' => 'Pilih Jenis Dokumen',
+            'prompt' => 'Semua Jenis',
         ]
     )->label('Jenis Dokumen') ?>
 
-    <?= $form->field($model, 'nomor_peraturan') ?>
-    <?= $form->field($model, 'tahun_terbit') ?>
+    <div class="row g-2">
+        <div class="col-md-7">
+            <?= $form->field($model, 'nomor_peraturan')->textInput(['placeholder' => 'No...']) ?>
+        </div>
+        <div class="col-md-5">
+            <?= $form->field($model, 'tahun_terbit')->textInput(['placeholder' => 'Tahun...']) ?>
+        </div>
+    </div>
 
-    <?php echo $form->field($model, 'status_terakhir')->dropDownList(\yii\helpers\ArrayHelper::map(\frontend\models\Status::find()->where(['id' => ([2, 4, 6, 7, 8])])->asArray()->all(), 'status', 'status'), [
-        'prompt' => 'Pilih Status',
-    ])->label('Status');
-    ?>
-    <?php echo $form->field($model, 'subyek') ?>
-    <?php echo $form->field($model, 'nama_pengarang') ?>
+    <?= $form->field($model, 'status_terakhir')->dropDownList(
+        \yii\helpers\ArrayHelper::map(\frontend\models\Status::find()->where(['id' => ([2, 4, 6, 7, 8])])->asArray()->all(), 'status', 'status'), 
+        ['prompt' => 'Semua Status']
+    )->label('Status'); ?>
+    
+    <?= $form->field($model, 'subyek')->textInput(['placeholder' => 'Ketik subyek...']) ?>
+    <?= $form->field($model, 'nama_pengarang')->textInput(['placeholder' => 'Ketik pengarang...']) ?>
 
-
-
-    <?php // echo $form->field($model, 'nomor_panggil') 
-    ?>
-
-    <?php // echo $form->field($model, 'bentuk_peraturan') 
-    ?>
-
-
-
-    <?php // echo $form->field($model, 'singkatan_jenis') 
-    ?>
-
-    <?php // echo $form->field($model, 'cetakan') 
-    ?>
-
-    <?php // echo $form->field($model, 'tempat_terbit') 
-    ?>
-
-    <?php // echo $form->field($model, 'penerbit') 
-    ?>
-
-    <?php // echo $form->field($model, 'tanggal_penetapan') 
-    ?>
-
-    <?php // echo $form->field($model, 'deskripsi_fisik') 
-    ?>
-
-    <?php // echo $form->field($model, 'sumber') 
-    ?>
-
-    <?php // echo $form->field($model, 'isbn') 
-    ?>
-
-    <?php // echo $form->field($model, 'bahasa') 
-    ?>
-
-    <?php // echo $form->field($model, 'bidang_hukum') 
-    ?>
-
-    <?php // echo $form->field($model, 'nomor_induk_buku') 
-    ?>
-
-    <?php // echo $form->field($model, 'singkatan_bentuk') 
-    ?>
-
-    <?php // echo $form->field($model, 'tipe_koleksi_nomor_eksemplar') 
-    ?>
-
-    <?php // echo $form->field($model, 'pola_nomor_eksemplar') 
-    ?>
-
-    <?php // echo $form->field($model, 'jumlah_eksemplar') 
-    ?>
-
-    <?php // echo $form->field($model, 'kala_terbit') 
-    ?>
-
-    <?php // echo $form->field($model, 'tahun_terbit') 
-    ?>
-
-    <?php // echo $form->field($model, 'tanggal_dibacakan') 
-    ?>
-
-    <?php // echo $form->field($model, 'pernyataan_tanggung_jawab') 
-    ?>
-
-    <?php // echo $form->field($model, 'edisi') 
-    ?>
-
-    <?php // echo $form->field($model, 'gmd') 
-    ?>
-
-    <?php // echo $form->field($model, 'judul_seri') 
-    ?>
-
-    <?php // echo $form->field($model, 'klasifikasi') 
-    ?>
-
-    <?php // echo $form->field($model, 'info_detil_spesifik') 
-    ?>
-
-    <?php // echo $form->field($model, 'abstrak') 
-    ?>
-
-    <?php // echo $form->field($model, 'gambar_sampul') 
-    ?>
-
-    <?php // echo $form->field($model, 'label') 
-    ?>
-
-    <?php // echo $form->field($model, 'sembunyikan_di_opac') 
-    ?>
-
-    <?php // echo $form->field($model, 'promosikan_ke_beranda') 
-    ?>
-
-    <?php // echo $form->field($model, 'status_terakhir') 
-    ?>
-
-    <?php // echo $form->field($model, 'status') 
-    ?>
-
-    <?php // echo $form->field($model, 'integrasi') 
-    ?>
-
-    <?php // echo $form->field($model, '_created_by') 
-    ?>
-
-    <?php // echo $form->field($model, '_updated_by') 
-    ?>
-
-    <?php // echo $form->field($model, 'created_at') 
-    ?>
-
-    <?php // echo $form->field($model, 'updated_at') 
-    ?>
-
-    <?php // echo $form->field($model, 'inisiatif') 
-    ?>
-
-    <?php // echo $form->field($model, 'pemrakarsa') 
-    ?>
-
-    <?php // echo $form->field($model, 'tanggal_pengundangan') 
-    ?>
-
-    <?php // echo $form->field($model, 'daerah') 
-    ?>
-
-    <?php // echo $form->field($model, 'penandatanganan') 
-    ?>
-
-    <?php // echo $form->field($model, 'lembaga_peradilan') 
-    ?>
-
-    <?php // echo $form->field($model, 'pemohon') 
-    ?>
-
-    <?php // echo $form->field($model, 'termohon') 
-    ?>
-
-    <?php // echo $form->field($model, 'jenis_perkara') 
-    ?>
-
-    <?php // echo $form->field($model, 'sub_klasifikasi') 
-    ?>
-
-    <?php // echo $form->field($model, 'amar_status') 
-    ?>
-
-    <?php // echo $form->field($model, 'berkekuatan_hukum_tetap') 
-    ?>
-
-    <?php // echo $form->field($model, 'urusan_pemerintahan') 
-    ?>
-
-    <?php // echo $form->field($model, 'catatan_status_peraturan') 
-    ?>
-
-    <?php // echo $form->field($model, 'hit_see') 
-    ?>
-
-    <?php // echo $form->field($model, 'hit_download') 
-    ?>
-    <br>
-    <div class="form-group">
-        <?= Html::submitButton('Cari', ['class' => 'btn btn-primary']) ?>
-
+    <div class="form-group mt-4 pt-2">
+        <?= Html::submitButton('<i class="bi bi-search me-2"></i> Terapkan Filter', ['class' => 'btn w-100 py-2 rounded-3 text-white fw-bold', 'style' => 'background-color: #1a2752;']) ?>
+        <?= Html::a('<i class="bi bi-arrow-counterclockwise"></i> Reset', ['index'], ['class' => 'btn btn-link w-100 text-muted text-decoration-none small mt-2']) ?>
     </div>
 
     <?php ActiveForm::end(); ?>
