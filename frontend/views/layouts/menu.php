@@ -11,7 +11,7 @@ use yii\widgets\Menu;
 <?php
 $menuItems = [
     [
-        'label' => 'Home',
+        'label' => 'Beranda',
         'url' => ['/site/index'],
     ],
 
@@ -26,20 +26,21 @@ $menuItems = [
             ['label' => 'Visi ', 'url' => ['site/visi']],
             ['label' => 'Misi', 'url' => ['site/misi']],
             //['label' => 'Struktur Organisasi', 'url' => ['site/sto']],
-            ['label' => 'Struktur Organisasi',
-             'options'=>['class'=>'dropdown'],
-             'template' => '<a href="" class="href_class">{label}</a>',
-             'items' => [
-             ['label' => 'JDIH Instansi', 'url' => ['site/sto']],
-             ['label' => 'Biro/Bagian Hukum', 'url' => ['site/stoinstansi']],
-                 ]
-             ],
-             ['label' => 'SK Tim Pengelola', 'url' => ['site/pengelola']],
-             ['label' => 'SOP', 'url' => ['site/sop']],
-            
+            [
+                'label' => 'Struktur Organisasi',
+                'options' => ['class' => 'dropdown'],
+                'template' => '<a href="" class="href_class">{label}</a>',
+                'items' => [
+                    ['label' => 'JDIH Instansi', 'url' => ['site/sto']],
+                    ['label' => 'Biro/Bagian Hukum', 'url' => ['site/stoinstansi']],
+                ]
+            ],
+            ['label' => 'SK Tim Pengelola', 'url' => ['site/pengelola']],
+            ['label' => 'SOP', 'url' => ['site/sop']],
+
         ]
     ],
-           
+
 
     [
         'label' => 'Jenis Dokumen',
@@ -64,7 +65,7 @@ $menuItems = [
         ]
     ],
     ['label' => 'Berita', 'url' => ['berita/index']],
-      [
+    [
         'label' => 'Link Terkait',
         'url' => '#',
         'options' => ['class' => 'dropdown'],
@@ -74,8 +75,8 @@ $menuItems = [
         'template' => '<span class="submenu-button"></span><a href={url}>{label}</a>',
 
         'items' => [
-            ['label' => 'Pusat JDIHN', 'url' => Url::to('https://jdihn.go.id/')],
-            ['label' => 'Website Utama', 'url' => Url::to('https://')],
+            ['label' => 'jdihn.go.id', 'url' => Url::to('https://jdihn.go.id/')],
+            ['label' => 'bphn.go.id', 'url' => Url::to('https://bphn.go.id/')],
         ]
     ],
 
@@ -90,8 +91,7 @@ if (Yii::$app->user->isGuest) {
 }
 echo Menu::widget([
     'items' => $menuItems,
-    'options' => [
-    ],
+    'options' => [],
     'activateParents' => true,
     //'encodeLabels' => false,
     'activeCssClass' => 'current',

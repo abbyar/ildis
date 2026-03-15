@@ -3,10 +3,17 @@
     "outDir": "./built",
     "allowJs": true,
     "sourceMap": true,
-    "experimentalDecorators": true
+    "experimentalDecorators": true,
+    "skipLibCheck": true,
+    "typeRoots": [],
+    "types": []
   },
   "include": [
     "./src/**/*.js",
     "./src/**/*.ts"
+  ],
+  "exclude": [
+    "node_modules",
+    "**/node_modules/*"
   ]
 }

@@ -1,0 +1,48 @@
+# Git
+.git
+.gitignore
+
+# IDE
+.vscode
+.idea
+
+# Documentation
+*.md
+!README.md
+LICENSE
+CHANGELOG.md
+
+# Docker
+Dockerfile
+docker-compose.yml
+.dockerignore
+
+# Environment
+.env
+.env.*
+!.env.example
+
+# Development
+node_modules/
+bower_components/
+npm-debug.log
+yarn-error.log
+
+# Tests
+vendor/bin/codecept
+codeception.yml
+*.test.php
+tests/
+common/tests/
+backend/tests/
+frontend/tests/
+
+# Development tools
+.phpunit.result.cache
+phpcs.xml
+phpstan.neon
+.xdebug
+
+# OS
+.DS_Store
+Thumbs.db

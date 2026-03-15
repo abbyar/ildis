@@ -8,6 +8,7 @@ use yii\filters\VerbFilter;
 use yii\filters\AccessControl;
 use common\models\MemberForm;
 use frontend\models\ContactForm;
+use frontend\models\DokumenSearch;
 
 
 class SiteController extends Controller
@@ -58,15 +59,14 @@ class SiteController extends Controller
 
     public function actionIndex()
     {
-
-        $berita = \frontend\models\Berita::find()->where(['status' => 1])
+        $berita = \frontend\models\Berita::find()
+            ->where(['status' => 1])
             ->orderBy(['created_at' => SORT_DESC])
             ->limit(3)
-            //->offset(1)
             ->all();
-        
+
         return $this->render('index', [
-            'berita' => $berita
+            'berita'       => $berita,
         ]);
     }
 

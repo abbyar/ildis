@@ -1,94 +1,60 @@
 <?php
 
 use yii\helpers\Html;
+use yii\helpers\Url;
 use yii\widgets\ListView;
+
+$this->title = 'Dokumen Peraturan';
 ?>
 
-<section>
-    <img src="frontend/assets/img/bluetop.jpg" class="img-fluid" alt="">
-   <br><br><br>
-    <div class="container">
-    </div>
-
-    <div class="container">
-        <div class="text-center">
-            <p><?= Html::a('Peraturan', ['']); ?></p>
-            <p><span class="active">Dokumen Hukum</span>
-            </p>
-        </div>
-    </div>
-    <br>
-
-<!-- start listing-list section -->
-
-    <div class="container">
-        <div class="border-bottom padding-20px-bottom margin-30px-bottom">
-
-         
-                <form id="w0" action="/dokumen/index" method="get" data-pjax="1">
-                    <div class="form-row align-items-center">
-                        <div class="col-md-10 my-1">
-                            <input type="text" class="form-control" id="dokumensearch-judul" name="DokumenSearch[judul]" placeholder="cari dokumen hukum lainnya...">
-                        </div>
-                        <br>
-
-                        <div class="col-md-2 my-1">
-                            <button type="submit" class="btn btn-primary">Cari</button>
-                        </div>
-                        <br>
-                    </div>
-                </form>
-           
-            <!-- <form id="w0" class="shadow-sm rounded mb-8" action="/jdih/dokumen/index" method="get" data-pjax="1"> -->
-            <!--                
-                <div class="input-group input-group-lg">
-                    <div class="input-group-prepend">
-                        <span class="input-group-text bg-light border-0 no-margin-bottom margin-10px-top">
-                            <i class="fa fa-search text-muted font-size-18" aria-hidden="true"></i>
-                        </span>
-                    </div>
-                    <input type="text" class="form-control no-margin-bottom margin-10px-top" id="dokumensearch-judul"  name="DokumenSearch[judul]" aria-label="Amount (to the nearest dollar)" placeholder="ketik dokumen..." required="">
-                    <div class="input-group-append no-margin-bottom margin-10px-top">
-                        <button type="submit" class="btn shadow-none btn-lg btn-danger text-uppercase">Cari</button>
-                    </div>
-                </div> -->
-            <!-- 
-                          <div class="input-group mb-3">
-                            
-                            <input type="text" class="form-control" id="dokumensearch-judul"  name="DokumenSearch[judul]" placeholder="cari dokumen hukum lain..." aria-label="Recipient's username" aria-describedby="button-addon2">
-                            <div class="input-group-append">
-                                <button class="btn btn-primary" type="submit" id="button-addon2"><span class="ti-search">Cari</span></button>
-                            </div>
-                        </div>
-
-            </form> -->
-        </div>
-
+<div class="dokumen-index-wrapper" style="background-color: #f8fafc; min-height: 100vh; padding-top: 80px;">
+    <!-- Main Content -->
+    <div class="container py-5">
         <div class="row">
-            <div class="col-lg-9 sm-margin-50px-bottom"><br>
-                <?= ListView::widget([
-                    'dataProvider' => $dataProvider,
-                    'itemOptions' => ['class' => 'item'],
-                    'itemView' => '_data',
-                    //'summary' => '',
-                'summary' => 'Ditampilkan {begin} - {end} dari {totalCount} Data<br>',    
-
-                    // 'itemView' => function ($model, $key, $index, $widget) {
-                    //     return Html::a(Html::encode($model->id), ['view', 'id' => $model->id]);
-                    // },
-                ]) ?>
-
-            </div>
-            <div class="col-lg-3">
-                <div class="side-bar">
-                    <div class="widget">
-                        <div class="widget-title"><br>
-                            <h3>Pencarian</h3>
+            <!-- Sidebar (Search Filters) -->
+            <div class="col-lg-3 mb-4">
+                <div class="side-bar sticky-top" style="top: 100px;">
+                    <div class="card border-0 rounded-4 shadow-sm" style="overflow: hidden;">
+                        <div class="card-header border-0 py-3" style="background-color: #f1f5f9;">
+                            <h5 class="card-title fw-bold mb-0" style="color: #1a2752; font-size: 1.1rem;">
+                                <i class="bi bi-search me-2"></i> Pencarian
+                            </h5>
                         </div>
-                        <?php echo $this->render('_search', ['model' => $searchModel]); ?>
+                        <div class="card-body p-4">
+                            <?php echo $this->render('_search', ['model' => $searchModel]); ?>
+                        </div>
                     </div>
+                </div>
+            </div>
+
+            <!-- Results List -->
+            <div class="col-lg-9">
+                <div class="results-container bg-white rounded-4 p-4 p-md-5" style="box-shadow: 0 4px 20px rgba(0,0,0,0.03);">
+                    <div class="results-summary mb-4 pb-3 border-bottom d-flex justify-content-between align-items-center">
+                        <div class="small text-muted">
+                            <?= $dataProvider->getTotalCount() > 0 ? "Menampilkan " . ($dataProvider->pagination->offset + 1) . " - " . min($dataProvider->pagination->offset + $dataProvider->pagination->limit, $dataProvider->getTotalCount()) . " dari " . number_format($dataProvider->getTotalCount()) . " dokumen" : "Tidak ada dokumen ditemukan" ?>
+                        </div>
+                    </div>
+
+                    <?= ListView::widget([
+                        'dataProvider' => $dataProvider,
+                        'options' => ['class' => 'results-list'],
+                        'itemOptions' => ['class' => 'item'],
+                        'itemView' => '_data',
+                        'summary' => false,
+                        'pager' => [
+                            'options' => ['class' => 'pagination justify-content-center mt-5'],
+                            'linkOptions' => ['class' => 'page-link'],
+                            'pageCssClass' => 'page-item',
+                            'activePageCssClass' => 'active',
+                            'disabledPageCssClass' => 'disabled',
+                            'prevPageLabel' => '<i class="bi bi-chevron-left"></i>',
+                            'nextPageLabel' => '<i class="bi bi-chevron-right"></i>',
+                        ],
+                    ]) ?>
                 </div>
             </div>
         </div>
     </div>
-</section>
+</div>
+
