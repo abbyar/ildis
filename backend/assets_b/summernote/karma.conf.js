@@ -35,13 +35,15 @@ module.exports = function (config) {
         entrypoints: /\.spec\.js$/,
         transforms: [require("karma-typescript-es6-transform")()],
         exclude: [
-          'node_modules'
+          'node_modules',
+          '**/node_modules/*'
         ],
         sourceMap: true,
         addNodeGlobals: false
       },
       compilerOptions: {
-        "module": "commonjs"
+        "module": "commonjs",
+        "skipLibCheck": true
       }
     }
   });

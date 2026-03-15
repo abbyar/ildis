@@ -4,13 +4,16 @@
     "allowJs": true,
     "sourceMap": true,
     "experimentalDecorators": true,
-    "skipLibCheck": true
+    "skipLibCheck": true,
+    "typeRoots": [],
+    "types": []
   },
   "include": [
     "./src/**/*.js",
     "./src/**/*.ts"
   ],
   "exclude": [
-    "node_modules"
+    "node_modules",
+    "**/node_modules/*"
   ]
 }
