@@ -93,10 +93,10 @@ class TipeDokumenController extends Controller
             $jenis = $_POST['TipeDokumen']['field']);    
             $model->tahun_ln =  date('Y', strtotime($_POST['Peraturan']['tgl_diundangkan']));
             */
-            $model->second_id = htmlentities($model->second_id);
-            $model->parent_id = htmlentities($model->parent_id);
-            $model->name = htmlentities($model->name);
-            $model->singkatan = htmlentities($model->singkatan);
+            $model->second_id = strip_tags($model->second_id);
+            $model->parent_id = strip_tags($model->parent_id);
+            $model->name = strip_tags($model->name);
+            $model->singkatan = strip_tags($model->singkatan);
             
             if ($model->save()) 
             {
@@ -128,10 +128,10 @@ class TipeDokumenController extends Controller
 
         if ($model->load(Yii::$app->request->post())) {
 
-            $model->second_id = htmlentities($model->second_id);
-            $model->parent_id = htmlentities($model->parent_id);
-            $model->name = htmlentities($model->name);
-            $model->singkatan = htmlentities($model->singkatan);
+            $model->second_id = strip_tags($model->second_id);
+            $model->parent_id = strip_tags($model->parent_id);
+            $model->name = strip_tags($model->name);
+            $model->singkatan = strip_tags($model->singkatan);
 
             if($model->save())
             {
@@ -208,7 +208,7 @@ class TipeDokumenController extends Controller
         
         if(count($rows)>0){
             foreach($rows as $row){
-                echo "<option value='$row->id'>$row->nama</option>";
+                echo "<option value='" . \yii\helpers\Html::encode($row->id) . "'>" . \yii\helpers\Html::encode($row->nama) . "</option>";
             }
         }
         else{

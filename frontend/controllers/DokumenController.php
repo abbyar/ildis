@@ -271,26 +271,27 @@ class DokumenController extends Controller
         echo "<option></option>";
         if (count($rows) > 0) {
             foreach ($rows as $branch) {
-                echo "<option value'" . $branch->id . "'>" . $branch->name . "</option>";
+                echo "<option value='" . \yii\helpers\Html::encode($branch->id) . "'>" . \yii\helpers\Html::encode($branch->name) . "</option>";
             }
         }
     }
 
     public function actionDownload($id)
     {
-
-        $path = Yii::getAlias('@common') . '/dokumen/' . $id;
-        if (file_exists($path)) {
-
-            // $model = Dokumen::find()
-            //    ->where(['lampiran' => $id])
-            //    ->one();
-
-            //    $model->hit_download = $model->hit_download +1;
-            //    $model->save(); 
-            return Yii::$app->response->sendFile($path);
-        } else {
-            throw new NotFoundHttpException("Tidak dapat menemukan file {$id}, silahkan hubungi admin");
+        // Sanitasi: ambil hanya nama file, tolak path separator
+        $id = basename($id);
+        if (empty($id) || strpos($id, '..') !== false) {
+            throw new NotFoundHttpException('File tidak ditemukan.');
         }
+
+        $allowedDir = realpath(Yii::getAlias('@common') . '/dokumen');
+        $path = realpath(Yii::getAlias('@common') . '/dokumen/' . $id);
+
+        // Pastikan path berada di dalam folder yang diizinkan
+        if ($path === false || $allowedDir === false || strpos($path, $allowedDir) !== 0) {
+            throw new NotFoundHttpException("Tidak dapat menemukan file, silahkan hubungi admin");
+        }
+
+        return Yii::$app->response->sendFile($path);
     }
 }

@@ -237,17 +237,19 @@ class PeraturanController extends Controller
                 $abstrak->saveAs($path);
             }
 
-            $model->jenis_peraturan = htmlentities($model->jenis_peraturan);
-            $model->bentuk_peraturan = htmlentities($model->bentuk_peraturan);
-            $model->judul = htmlentities($model->judul);
-            $model->nomor_peraturan = htmlentities($model->nomor_peraturan);
-            $model->tahun_terbit = htmlentities($model->tahun_terbit);
-            $model->tempat_terbit = htmlentities($model->tempat_terbit);
-            $model->tanggal_penetapan = htmlentities($model->tanggal_penetapan);
-            $model->penandatanganan = htmlentities($model->penandatanganan);
-            $model->tanggal_pengundangan = htmlentities($model->tanggal_pengundangan);
-            $model->pemrakarsa = htmlentities($model->pemrakarsa);
-            $model->sumber = htmlentities($model->sumber);
+            // Sanitasi input: strip HTML tags untuk mencegah XSS
+            // Encoding dilakukan di view layer (Html::encode / GridView)
+            $model->jenis_peraturan = strip_tags($model->jenis_peraturan);
+            $model->bentuk_peraturan = strip_tags($model->bentuk_peraturan);
+            $model->judul = strip_tags($model->judul);
+            $model->nomor_peraturan = strip_tags($model->nomor_peraturan);
+            $model->tahun_terbit = strip_tags($model->tahun_terbit);
+            $model->tempat_terbit = strip_tags($model->tempat_terbit);
+            $model->tanggal_penetapan = strip_tags($model->tanggal_penetapan);
+            $model->penandatanganan = strip_tags($model->penandatanganan);
+            $model->tanggal_pengundangan = strip_tags($model->tanggal_pengundangan);
+            $model->pemrakarsa = strip_tags($model->pemrakarsa);
+            $model->sumber = strip_tags($model->sumber);
             
             $model->save();
 
@@ -328,17 +330,19 @@ class PeraturanController extends Controller
                 $model->bentuk_peraturan = $jenisperaturan->name;
             }
             
-            $model->jenis_peraturan = htmlentities($model->jenis_peraturan);
-            $model->bentuk_peraturan = htmlentities($model->bentuk_peraturan);
-            $model->judul = htmlentities($model->judul);
-            $model->nomor_peraturan = htmlentities($model->nomor_peraturan);
-            $model->tahun_terbit = htmlentities($model->tahun_terbit);
-            $model->tempat_terbit = htmlentities($model->tempat_terbit);
-            $model->tanggal_penetapan = htmlentities($model->tanggal_penetapan);
-            $model->penandatanganan = htmlentities($model->penandatanganan);
-            $model->tanggal_pengundangan = htmlentities($model->tanggal_pengundangan);
-            $model->pemrakarsa = htmlentities($model->pemrakarsa);
-            $model->sumber = htmlentities($model->sumber);
+            // Sanitasi input: strip HTML tags untuk mencegah XSS
+            // Encoding dilakukan di view layer (Html::encode / GridView)
+            $model->jenis_peraturan = strip_tags($model->jenis_peraturan);
+            $model->bentuk_peraturan = strip_tags($model->bentuk_peraturan);
+            $model->judul = strip_tags($model->judul);
+            $model->nomor_peraturan = strip_tags($model->nomor_peraturan);
+            $model->tahun_terbit = strip_tags($model->tahun_terbit);
+            $model->tempat_terbit = strip_tags($model->tempat_terbit);
+            $model->tanggal_penetapan = strip_tags($model->tanggal_penetapan);
+            $model->penandatanganan = strip_tags($model->penandatanganan);
+            $model->tanggal_pengundangan = strip_tags($model->tanggal_pengundangan);
+            $model->pemrakarsa = strip_tags($model->pemrakarsa);
+            $model->sumber = strip_tags($model->sumber);
 
             if ($model->save()) {
                 $log = new LogPustakawan();

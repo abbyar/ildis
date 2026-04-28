@@ -17,7 +17,6 @@ class AdminLteAsset extends AssetBundle
         'css/AdminLTE.min.css',
         'css/skins/_all-skins.min.css',
         'css/style.css',
-        'summernote/dist/summernote.css',
         'https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.css'
     ];
     public $js = [
@@ -29,7 +28,6 @@ class AdminLteAsset extends AssetBundle
         'plugins/slimScroll/jquery.slimscroll.min.js',
         'plugins/chartjs/Chart.min.js',
         //'js/pages/dashboard2.js',
-        'summernote/dist/summernote.js',
         'https://cdn.jsdelivr.net/momentjs/latest/moment.min.js',
         'https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.min.js'
     ];

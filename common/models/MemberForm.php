@@ -43,8 +43,42 @@ class MemberForm extends Model
     {
         if (!$this->hasErrors()) {
             $user = $this->getUser();
-            if (!$user || !$user->validatePassword($this->password)) {
-                $this->addError($attribute, 'Incorrect username or password.');
+            $username = $this->username;
+            $cacheKey = "failed_member_logins_{$username}";
+            $failedLogins = Yii::$app->cache->get($cacheKey) ?: 0;
+
+            if ($user) {
+                // Cek apakah akun sedang disuspend
+                if (isset($user->suspended_until) && $user->suspended_until && strtotime($user->suspended_until) > time()) {
+                    $remaining = strtotime($user->suspended_until) - time();
+                    $minutesLeft = ceil($remaining / 60);
+                    $this->addError($attribute, "Akun ditangguhkan. Coba lagi dalam {$minutesLeft} menit.");
+                    return;
+                }
+
+                if (!$user->validatePassword($this->password)) {
+                    $failedLogins++;
+                    Yii::$app->cache->set($cacheKey, $failedLogins, 300);
+
+                    if ($failedLogins >= 5) {
+                        // Suspend akun jika kolom suspended_until ada
+                        if ($user->hasAttribute('suspended_until')) {
+                            $user->suspended_until = date('Y-m-d H:i:s', time() + 300);
+                            $user->save(false);
+                        }
+                        Yii::$app->cache->delete($cacheKey);
+                        $this->addError($attribute, "Akun ditangguhkan selama 5 menit karena salah login 5x berturut-turut.");
+                    } else {
+                        $this->addError($attribute, "Username atau password salah. Sisa percobaan: " . (5 - $failedLogins));
+                    }
+                } else {
+                    // Reset counter on successful password
+                    Yii::$app->cache->delete($cacheKey);
+                }
+            } else {
+                $failedLogins++;
+                Yii::$app->cache->set($cacheKey, $failedLogins, 300);
+                $this->addError($attribute, "Username atau password salah. Sisa percobaan: " . (5 - $failedLogins));
             }
         }
     }

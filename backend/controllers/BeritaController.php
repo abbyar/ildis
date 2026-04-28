@@ -93,7 +93,7 @@ class BeritaController extends Controller
                 $path = Yii::getAlias('@common') . '/dokumen/' . $model->image;
                 $image->saveAs($path);
             }
-            $model->judul = htmlentities($model->judul);            
+            $model->judul = strip_tags($model->judul);
             /*
             isi parameter tambahan
             
@@ -140,7 +140,7 @@ class BeritaController extends Controller
             $jenis = $_POST['Berita']['field']);    
             $model->tahun_ln =  date('Y', strtotime($_POST['Peraturan']['tgl_diundangkan']));
             */
-            $model->judul = htmlentities($model->judul);
+            $model->judul = strip_tags($model->judul);
 
             if ($model->save()) {
                 Yii::$app->session->setFlash('success', 'Data Berita berhasil ditambahkan');
@@ -229,7 +229,7 @@ class BeritaController extends Controller
 
         if (count($rows) > 0) {
             foreach ($rows as $row) {
-                echo "<option value='$row->id'>$row->nama</option>";
+                echo "<option value='" . \yii\helpers\Html::encode($row->id) . "'>" . \yii\helpers\Html::encode($row->nama) . "</option>";
             }
         } else {
             echo "<option>Nenhum municipio cadastrado</option>";

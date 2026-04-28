@@ -114,14 +114,21 @@ class MasukanMasyarakatController extends Controller
 
     public function actionDownload($id) 
     { 
-
-        $path = Yii::getAlias('@common'). '/uploads/masyarakat/' . $id;
-        if (file_exists($path)) {
-
-            return Yii::$app->response->sendFile($path);
-        } else {
-            throw new NotFoundHttpException("can't find {$id} file");
+        // Sanitasi: ambil hanya nama file, tolak path separator
+        $id = basename($id);
+        if (empty($id) || strpos($id, '..') !== false) {
+            throw new NotFoundHttpException('File tidak ditemukan.');
         }
+
+        $allowedDir = realpath(Yii::getAlias('@common') . '/uploads/masyarakat');
+        $path = realpath(Yii::getAlias('@common') . '/uploads/masyarakat/' . $id);
+
+        // Pastikan path berada di dalam folder yang diizinkan
+        if ($path === false || $allowedDir === false || strpos($path, $allowedDir) !== 0) {
+            throw new NotFoundHttpException("Tidak dapat menemukan file, silahkan hubungi admin");
+        }
+
+        return Yii::$app->response->sendFile($path);
     } 
     /**
      * Updates an existing MasukanMasyarakat model.
@@ -221,7 +228,7 @@ class MasukanMasyarakatController extends Controller
         
         if(count($rows)>0){
             foreach($rows as $row){
-                echo "<option value='$row->id'>$row->nama</option>";
+                echo "<option value='" . \yii\helpers\Html::encode($row->id) . "'>" . \yii\helpers\Html::encode($row->nama) . "</option>";
             }
         }
         else{

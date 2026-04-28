@@ -191,7 +191,7 @@ class KlasifikasiController extends Controller
         
         if(count($rows)>0){
             foreach($rows as $row){
-                echo "<option value='$row->id'>$row->nama</option>";
+                echo "<option value='" . \yii\helpers\Html::encode($row->id) . "'>" . \yii\helpers\Html::encode($row->nama) . "</option>";
             }
         }
         else{

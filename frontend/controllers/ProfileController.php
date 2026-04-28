@@ -87,12 +87,18 @@ class ProfileController extends \yii\web\Controller
     {
         $model = Member::find()->where(['id' => \Yii::$app->user->identity->id])->one();
        
-
         if ($model->load(Yii::$app->request->post())) {
-            $model->password_hash = Yii::$app->security->generatePasswordHash($model->password_hash);
+            // password_hash field dari form berisi password baru (plain text)
+            $newPassword = $model->password_hash;
+            if (empty($newPassword) || strlen($newPassword) < 6) {
+                Yii::$app->session->setFlash('error', 'Password minimal 6 karakter');
+                return $this->render('update-password', [
+                    'model' => $model,
+                ]);
+            }
+            $model->password_hash = Yii::$app->security->generatePasswordHash($newPassword);
         
-            if ($model->save()){
-
+            if ($model->save(false)){
 
             Yii::$app->session->setFlash('success', 'Password Member berhasil diubah');
             return $this->redirect(['profile', 'id' => $model->id]);

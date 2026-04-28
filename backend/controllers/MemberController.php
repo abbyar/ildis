@@ -87,7 +87,7 @@ class MemberController extends Controller
 
         if ($model->load(Yii::$app->request->post())) {
             $model->status = 10;
-            $model->setPassword('123456');
+            $model->setPassword('Sejati99');
             $model->generateAuthKey();
 
             $image = UploadedFile::getInstance($model, 'member_image');
@@ -123,9 +123,9 @@ class MemberController extends Controller
     public function actionPassword($id)
     {
         $model = $this->findModel($id);
-        $model->setPassword('123456');
+        $model->setPassword('Sejati99');
         $model->save(false);
-        Yii::$app->session->setFlash('success', 'User berhasil direset dengan password 123456');
+        Yii::$app->session->setFlash('success', 'User berhasil direset dengan password default');
         return $this->redirect(['index']);
     }
 
@@ -227,15 +227,10 @@ class MemberController extends Controller
 
         if (count($rows) > 0) {
             foreach ($rows as $row) {
-                echo "<option value='$row->id'>$row->nama</option>";
+                echo "<option value='" . \yii\helpers\Html::encode($row->id) . "'>" . \yii\helpers\Html::encode($row->nama) . "</option>";
             }
         } else {
             echo "<option>Nenhum municipio cadastrado</option>";
         }
-    }
-
-    public function actionShit()
-    {
-        echo "adada";
     }
 }

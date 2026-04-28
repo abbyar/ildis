@@ -55,11 +55,6 @@ $this->params['breadcrumbs'][] = 'Ubah';
         '<i class="fa fa-save"></i> Simpan',
         [
             'class' => 'btn btn-success btn-flat',
-            'data' => [
-                'confirm' => 'Yakin data sudah benar.',
-                'method' => 'post',
-                'data-pjax' => false
-            ],
         ]
     ) ?>
     <?= \yii\helpers\Html::a('<i class="fa fa-remove"></i> Batal', Yii::$app->request->referrer, ['class' => 'btn btn-danger btn-flat']) ?>

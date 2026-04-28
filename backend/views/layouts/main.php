@@ -1,6 +1,4 @@
 <?php
-$dir = 'assets/';
-array_map('unlink', glob("{$dir}*.*"));
 
 /* @var $this \yii\web\View */
 /* @var $content string */

@@ -79,36 +79,36 @@ class FrontendConfigController extends Controller
     {
         $model = $this->findModel($id);
 
-
         if ($model->load(Yii::$app->request->post())) {
-
             if ($model->save()) {
                 Yii::$app->session->setFlash('success', 'Konfigurasi Frontend berhasil diubah');
                 return $this->redirect(['view', 'id' => $model->id]);
+            } else {
+                Yii::$app->session->setFlash('error', 'Gagal menyimpan: ' . implode(', ', $model->getFirstErrors()));
             }
-        } else {
-            return $this->render('update', [
-                'model' => $model,
-            ]);
         }
+
+        return $this->render('update', [
+            'model' => $model,
+        ]);
     }
 
     public function actionDeskripsi($id)
     {
         $model = $this->findModel($id);
 
-
         if ($model->load(Yii::$app->request->post())) {
-
             if ($model->save()) {
                 Yii::$app->session->setFlash('success', 'Konfigurasi Frontend berhasil diubah');
                 return $this->redirect(['view', 'id' => $model->id]);
+            } else {
+                Yii::$app->session->setFlash('error', 'Gagal menyimpan: ' . implode(', ', $model->getFirstErrors()));
             }
-        } else {
-            return $this->render('deskripsi', [
-                'model' => $model,
-            ]);
         }
+
+        return $this->render('deskripsi', [
+            'model' => $model,
+        ]);
     }
 
     public function actionUpload($id)
@@ -120,20 +120,20 @@ class FrontendConfigController extends Controller
 
             $image = UploadedFile::getInstance($model, 'isi_konfig');
             if (!empty($image)) {
-                $model->isi_konfig =  strtolower(preg_replace('/[^a-zA-Z0-9-_\.]/', '', $image->name));
+                $model->isi_konfig = \backend\web\components\FileHelper::sanitizeFilename($image->name, ['jpg', 'jpeg', 'png', 'gif', 'svg', 'ico', 'pdf']);
                 $path = Yii::getAlias('@common') . '/dokumen/' . $model->isi_konfig;
                 $image->saveAs($path);
             }
 
             if ($model->save()) {
-                Yii::$app->session->setFlash('success', 'Data Berita berhasil ditambahkan');
+                Yii::$app->session->setFlash('success', 'Konfigurasi Frontend berhasil diubah');
                 return $this->redirect(['view', 'id' => $model->id]);
             }
-        } else {
-            return $this->render('upload', [
-                'model' => $model,
-            ]);
         }
+
+        return $this->render('upload', [
+            'model' => $model,
+        ]);
     }
 
 

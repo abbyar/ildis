@@ -113,7 +113,7 @@ class BeritaController extends Controller
         }
 
         foreach ($institutions as $institution) {
-            echo "<option value='{$institution->id}'>{$institution->nama}</option>";
+            echo "<option value='" . \yii\helpers\Html::encode($institution->id) . "'>" . \yii\helpers\Html::encode($institution->nama) . "</option>";
         }
     }
 
